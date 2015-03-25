@@ -1,0 +1,61 @@
+Domain explorer
+
+Time spent: 11 hours
+App url: https://afternoon-bayou-3709.herokuapp.com
+Code url: https://github.com/Nekuromento/domainly
+
+Overview
+
+This is a tool for giving insights into what links particular web-site contains.
+For every analysed url tool provides a list of visited pages and discovered links grouped by domain.
+Results for every visited page can be toggled on and off.
+
+Usage
+
+Tool can be used either via web UI or via HTTP requests.
+
+Warning: processing time grows exponentially with search depth level. Setting the value high leads to EXTREMELY long processing.
+
+All HTTP requests are implemented in a non-blocking way, so the server can handle multiple simultaneous requests with no issues.
+
+HTTP api
+GET  /api/domains - provides a list of previously analysed web-pages
+POST /api/scan    - starts analysing requested web-page
+
+Code overview
+
+Tool is implemented in Scala using Play framework for backend and React.js for frontend.
+
+Project directory structure
+
+- app        // contains all app code
+  |- assets  // all frontend-related code
+  |  |- javascripts
+  |     |-components // React ui components
+  |-controllers      // Request handlers
+  |-crawler          // Web crawler
+  |-models           // Persisted models
+
+Status of work and possible improvements
+method `scan` recoursively crawls the web-site
+method `get` fetches headers and provides a stream for content
+method `parse` feeds the content to HTML parser
+method `extractLinks` extract links from HTML
+
+The tool can crawl across web pages within a specified depth.
+It skips links leading to non-html content using headers.
+
+Web crawling is implemented in file `app/crawler/Crawler.scala`
+
+
+While the tool can crawl web - it does so inefficiently. Current implementation analyses one page at a time, building a list of pages to visit as it goes. Processing multiple pages in parallel could significantly speed up the process.
+
+Also the tool has to keep track of visited pages to prevent itself from analysing the same page again. When scanning with high depth level absence of tracking of visited pages significantly slows down the process.
+
+Adding an option to limit the crawler from leaving domain of the requested web-site would be valuable.
+
+Another possible improvement would be maintaining a cache of visited pages accessible to multiple request running simultaneously, storing hashes and ETags of visited pages.
+
+Current web UI has usability issues when exploring results from a request with high search depth. When number of discovered links approaches tens of thousands UI has noticeable lags.
+
+The tool is not covered by any tests, so nobody knows what horrible bugs lurk within it.

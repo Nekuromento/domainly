@@ -1,0 +1,13 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Home page
+GET     /                           controllers.Application.index
+
+# Crawler API
+GET     /api/domains                controllers.ApiController.allSearches
+POST    /api/scan                   controllers.ApiController.scan
+
+# Use `Assets.versioned` to enable Play 2.3's Asset Fingerprinting
+GET    /assets/*file                controllers.Assets.versioned(path="/public", file: Asset)
